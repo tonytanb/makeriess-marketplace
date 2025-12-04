@@ -126,8 +126,48 @@ npm run amplify:deploy
 - Configure AWS infrastructure (Route 53, DynamoDB, OpenSearch)
 - Start implementing Task 2: GraphQL API with AppSync
 
+## Deployment
+
+### Quick Deploy to AWS Amplify
+
+1. **Push to GitHub:**
+   ```bash
+   git remote add origin https://github.com/YOUR_USERNAME/makeriess-marketplace.git
+   git push -u origin main
+   ```
+
+2. **Deploy via AWS Console:**
+   - Go to [AWS Amplify Console](https://console.aws.amazon.com/amplify/)
+   - Click "New app" → "Host web app"
+   - Connect your GitHub repository
+   - Amplify will auto-detect Next.js and deploy
+
+3. **Test Demo Mode:**
+   ```
+   https://your-app.amplifyapp.com/?demo=true
+   ```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+
+## Demo Mode
+
+Test the full marketplace without backend setup:
+
+- **Enable**: Visit `/?demo=true` or `/demo`
+- **Features**: 30+ mock API endpoints, POS integrations, analytics
+- **Docs**: [DEMO_MODE_COMPLETE.md](DEMO_MODE_COMPLETE.md)
+
+### Demo Credentials (Toast POS)
+```
+Client ID: toast_demo_client_abc123
+Client Secret: toast_demo_secret_xyz789
+Restaurant GUID: demo-guid-123
+```
+
 ## Documentation
 
 - [Requirements](.kiro/specs/makeriess-marketplace/requirements.md)
 - [Design](.kiro/specs/makeriess-marketplace/design.md)
 - [Tasks](.kiro/specs/makeriess-marketplace/tasks.md)
+- [Deployment Guide](DEPLOYMENT.md)
+- [Demo Mode Guide](DEMO_MODE_COMPLETE.md)
