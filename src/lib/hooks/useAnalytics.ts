@@ -51,7 +51,7 @@ export interface VendorAnalyticsData {
   summary: AnalyticsSummary;
   dailyMetrics: VendorMetrics[];
   topProducts: TopProduct[];
-  historicalTrends: any[] | null;
+  historicalTrends: Array<{ date: string; value: number; [key: string]: unknown }> | null;
 }
 
 export function useVendorAnalytics(params: VendorAnalyticsParams) {

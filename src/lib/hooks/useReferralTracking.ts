@@ -16,8 +16,8 @@ export function useReferralTracking() {
         localStorage.setItem('makeriess_referrer_timestamp', Date.now().toString());
         
         // Track referral event
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-          (window as any).gtag('event', 'referral_visit', {
+        if (typeof window !== 'undefined' && (window as Window & { gtag?: (...args: unknown[]) => void }).gtag) {
+          (window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'referral_visit', {
             referrer_id: referrerId,
           });
         }
@@ -83,8 +83,8 @@ export function trackReferralOrder(orderId: string, totalAmount: number): void {
   
   if (referrerId) {
     // Track referral conversion
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'referral_conversion', {
+    if (typeof window !== 'undefined' && (window as Window & { gtag?: (...args: unknown[]) => void }).gtag) {
+      (window as Window & { gtag: (...args: unknown[]) => void }).gtag('event', 'referral_conversion', {
         referrer_id: referrerId,
         order_id: orderId,
         value: totalAmount,

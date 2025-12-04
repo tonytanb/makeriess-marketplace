@@ -8,13 +8,13 @@ const client = generateClient<Schema>();
 
 interface PromotionFormProps {
   vendorId: string;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: Record<string, unknown>) => Promise<void>;
   onCancel: () => void;
 }
 
 export function PromotionForm({ vendorId, onSubmit, onCancel }: PromotionFormProps) {
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Array<{ id: string; name: string; [key: string]: unknown }>>([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',

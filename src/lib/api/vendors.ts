@@ -15,7 +15,7 @@ export interface VendorDashboardData {
   pendingOrders: number;
   totalProducts: number;
   visibleProducts: number;
-  recentOrders: any[];
+  recentOrders: Array<{ id: string; status: string; total: number; createdAt: string; [key: string]: unknown }>;
   topProducts: Array<{
     productId: string;
     productName: string;

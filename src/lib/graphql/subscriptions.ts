@@ -16,6 +16,9 @@ import type { Schema } from '../../../amplify/data/resource';
 
 const client = generateClient<Schema>();
 
+type ProductUpdate = Record<string, unknown>;
+type OrderUpdate = Record<string, unknown>;
+
 /**
  * Subscribe to product updates for a specific vendor
  * Useful for vendor portal to see real-time product changes
@@ -23,7 +26,7 @@ const client = generateClient<Schema>();
  */
 export function subscribeToProductUpdates(
   vendorId: string,
-  onUpdate: (product: any) => void,
+  onUpdate: (product: ProductUpdate) => void,
   onError?: (error: Error) => void
 ) {
   const subscription = client.models.Product.onUpdate({
@@ -52,7 +55,7 @@ export function subscribeToProductUpdates(
  */
 export function subscribeToOrderStatusChanges(
   customerId: string,
-  onStatusChange: (order: any) => void,
+  onStatusChange: (order: OrderUpdate) => void,
   onError?: (error: Error) => void
 ) {
   const subscription = client.models.Order.onUpdate({
@@ -79,7 +82,7 @@ export function subscribeToOrderStatusChanges(
  * No filter applied
  */
 export function subscribeToAllProductUpdates(
-  onUpdate: (product: any) => void,
+  onUpdate: (product: ProductUpdate) => void,
   onError?: (error: Error) => void
 ) {
   const subscription = client.models.Product.onUpdate().subscribe({
@@ -103,7 +106,7 @@ export function subscribeToAllProductUpdates(
  */
 export function subscribeToNewProducts(
   vendorId: string,
-  onCreate: (product: any) => void,
+  onCreate: (product: ProductUpdate) => void,
   onError?: (error: Error) => void
 ) {
   const subscription = client.models.Product.onCreate({
@@ -131,7 +134,7 @@ export function subscribeToNewProducts(
  */
 export function subscribeToNewOrders(
   vendorId: string,
-  onCreate: (order: any) => void,
+  onCreate: (order: OrderUpdate) => void,
   onError?: (error: Error) => void
 ) {
   const subscription = client.models.Order.onCreate({

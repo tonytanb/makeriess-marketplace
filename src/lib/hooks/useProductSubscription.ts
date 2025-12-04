@@ -10,7 +10,7 @@ import { subscribeToProductUpdates, unsubscribe } from '../graphql/subscriptions
  * @returns Latest product update
  */
 export function useProductSubscription(vendorId: string, enabled = true) {
-  const [latestUpdate, setLatestUpdate] = useState<any>(null);
+  const [latestUpdate, setLatestUpdate] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {

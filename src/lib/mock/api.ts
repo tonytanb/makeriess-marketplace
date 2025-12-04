@@ -104,7 +104,7 @@ export const mockAPI = {
     return order;
   },
 
-  async createOrder(orderData: any) {
+  async createOrder(orderData: Record<string, unknown>) {
     await delay(1000);
     const newOrder = {
       id: `order-${Date.now()}`,
@@ -155,7 +155,7 @@ export const mockAPI = {
     return mockReviews.filter(r => r.productId === productId);
   },
 
-  async createReview(reviewData: any) {
+  async createReview(reviewData: Record<string, unknown>) {
     await delay(800);
     const newReview = {
       id: `review-${Date.now()}`,
@@ -184,11 +184,11 @@ export const mockAPI = {
     return cart ? JSON.parse(cart) : { items: [], total: 0 };
   },
 
-  async addToCart(item: any) {
+  async addToCart(item: { productId: string; quantity: number; price: number; [key: string]: unknown }) {
     await delay(300);
     if (typeof window === 'undefined') return;
     const cart = await this.getCart();
-    const existingItem = cart.items.find((i: any) => i.productId === item.productId);
+    const existingItem = cart.items.find((i: { productId: string }) => i.productId === item.productId);
     
     if (existingItem) {
       existingItem.quantity += item.quantity;
@@ -196,7 +196,7 @@ export const mockAPI = {
       cart.items.push(item);
     }
     
-    cart.total = cart.items.reduce((sum: number, i: any) => sum + (i.price * i.quantity), 0);
+    cart.total = cart.items.reduce((sum: number, i: { price: number; quantity: number }) => sum + (i.price * i.quantity), 0);
     localStorage.setItem('mockCart', JSON.stringify(cart));
     return cart;
   },
@@ -205,8 +205,8 @@ export const mockAPI = {
     await delay(300);
     if (typeof window === 'undefined') return;
     const cart = await this.getCart();
-    cart.items = cart.items.filter((i: any) => i.productId !== productId);
-    cart.total = cart.items.reduce((sum: number, i: any) => sum + (i.price * i.quantity), 0);
+    cart.items = cart.items.filter((i: { productId: string }) => i.productId !== productId);
+    cart.total = cart.items.reduce((sum: number, i: { price: number; quantity: number }) => sum + (i.price * i.quantity), 0);
     localStorage.setItem('mockCart', JSON.stringify(cart));
     return cart;
   },
@@ -302,7 +302,7 @@ export const mockAPI = {
   },
 
   // Vendor Profile Management
-  async updateVendorProfile(vendorId: string, updates: any) {
+  async updateVendorProfile(vendorId: string, updates: Record<string, unknown>) {
     await delay(800);
     const vendor = mockVendors.find(v => v.id === vendorId);
     if (!vendor) throw new Error('Vendor not found');

@@ -72,7 +72,7 @@ export function cacheVendor(vendor: CacheableVendor) {
 }
 
 // Get cached products
-export function getCachedProducts(): Record<string, any> {
+export function getCachedProducts(): Record<string, CacheableProduct & { cachedAt: number }> {
   if (typeof window === 'undefined') {
     return {};
   }
@@ -87,7 +87,7 @@ export function getCachedProducts(): Record<string, any> {
 }
 
 // Get cached vendors
-export function getCachedVendors(): Record<string, any> {
+export function getCachedVendors(): Record<string, CacheableVendor & { cachedAt: number }> {
   if (typeof window === 'undefined') {
     return {};
   }
@@ -102,13 +102,13 @@ export function getCachedVendors(): Record<string, any> {
 }
 
 // Get single cached product
-export function getCachedProduct(productId: string): any | null {
+export function getCachedProduct(productId: string): (CacheableProduct & { cachedAt: number }) | null {
   const products = getCachedProducts();
   return products[productId] || null;
 }
 
 // Get single cached vendor
-export function getCachedVendor(vendorId: string): any | null {
+export function getCachedVendor(vendorId: string): (CacheableVendor & { cachedAt: number }) | null {
   const vendors = getCachedVendors();
   return vendors[vendorId] || null;
 }
@@ -125,9 +125,9 @@ export function clearOldCache() {
   try {
     // Clear old products
     const products = getCachedProducts();
-    const freshProducts: Record<string, any> = {};
+    const freshProducts: Record<string, CacheableProduct & { cachedAt: number }> = {};
     
-    Object.entries(products).forEach(([id, data]: [string, any]) => {
+    Object.entries(products).forEach(([id, data]: [string, CacheableProduct & { cachedAt: number }]) => {
       if (now - data.cachedAt < MAX_AGE) {
         freshProducts[id] = data;
       }
@@ -137,9 +137,9 @@ export function clearOldCache() {
 
     // Clear old vendors
     const vendors = getCachedVendors();
-    const freshVendors: Record<string, any> = {};
+    const freshVendors: Record<string, CacheableVendor & { cachedAt: number }> = {};
     
-    Object.entries(vendors).forEach(([id, data]: [string, any]) => {
+    Object.entries(vendors).forEach(([id, data]: [string, CacheableVendor & { cachedAt: number }]) => {
       if (now - data.cachedAt < MAX_AGE) {
         freshVendors[id] = data;
       }

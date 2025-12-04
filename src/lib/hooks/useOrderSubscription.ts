@@ -10,7 +10,7 @@ import { subscribeToOrderStatusChanges, unsubscribe } from '../graphql/subscript
  * @returns Latest order status update
  */
 export function useOrderSubscription(customerId: string, enabled = true) {
-  const [latestUpdate, setLatestUpdate] = useState<any>(null);
+  const [latestUpdate, setLatestUpdate] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {

@@ -48,8 +48,8 @@ export default function ToastSetupPage() {
       } else {
         setError(result.message || 'Failed to connect Toast POS');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to connect Toast POS');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to connect Toast POS');
     } finally {
       setIsConnecting(false);
     }

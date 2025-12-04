@@ -12,7 +12,7 @@ const client = generateClient<Schema>();
 interface Story {
   id: string;
   vendorId: string;
-  vendor?: any;
+  vendor?: { id: string; name: string; [key: string]: unknown };
   platform: string;
   videoUrl: string;
   thumbnailUrl?: string;

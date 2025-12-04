@@ -242,7 +242,7 @@ export default function VendorProductsPage() {
         if (!line) continue;
 
         const values = line.split(',').map((v) => v.trim().replace(/^"|"$/g, ''));
-        const product: any = {};
+        const product: Record<string, string> = {};
 
         headers.forEach((header, index) => {
           product[header] = values[index];

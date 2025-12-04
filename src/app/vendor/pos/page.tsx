@@ -106,10 +106,10 @@ export default function POSConnectionPage() {
           message: result.message || 'Failed to connect POS system',
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setNotification({
         type: 'error',
-        message: error.message || 'Failed to connect POS system',
+        message: error instanceof Error ? error.message : 'Failed to connect POS system',
       });
     }
   };
@@ -129,10 +129,10 @@ export default function POSConnectionPage() {
           message: `Sync completed with errors: ${result.errors.join(', ')}`,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setNotification({
         type: 'error',
-        message: error.message || 'Failed to sync products',
+        message: error instanceof Error ? error.message : 'Failed to sync products',
       });
     }
   };
@@ -144,10 +144,10 @@ export default function POSConnectionPage() {
         type: 'success',
         message: 'Successfully disconnected POS system',
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setNotification({
         type: 'error',
-        message: error.message || 'Failed to disconnect POS system',
+        message: error instanceof Error ? error.message : 'Failed to disconnect POS system',
       });
     }
   };

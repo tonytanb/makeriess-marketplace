@@ -68,50 +68,52 @@ export interface AddressInput {
   instructions?: string;
 }
 
+type GraphQLResponse<T> = { data: T; errors?: unknown[] };
+
 export const profileService = {
   // Customer Profile
   getProfile: async (customerId: string): Promise<CustomerProfile> => {
-    const response: any = await client.queries.manageCustomerProfile({
+    const response = await client.queries.manageCustomerProfile({
       operation: 'GET',
       customerId,
-    });
+    }) as GraphQLResponse<CustomerProfile>;
     return response.data;
   },
 
   updateProfile: async (customerId: string, profileUpdate: ProfileUpdateInput): Promise<CustomerProfile> => {
-    const response: any = await client.queries.manageCustomerProfile({
+    const response = await client.queries.manageCustomerProfile({
       operation: 'UPDATE',
       customerId,
       profileUpdate,
-    });
+    }) as GraphQLResponse<CustomerProfile>;
     return response.data;
   },
 
   // Saved Addresses
   listAddresses: async (customerId: string): Promise<SavedAddress[]> => {
-    const response: any = await client.queries.manageSavedAddresses({
+    const response = await client.queries.manageSavedAddresses({
       operation: 'LIST',
       customerId,
-    });
+    }) as GraphQLResponse<SavedAddress[]>;
     return response.data.addresses || [];
   },
 
   addAddress: async (customerId: string, address: AddressInput): Promise<SavedAddress> => {
-    const response: any = await client.queries.manageSavedAddresses({
+    const response = await client.queries.manageSavedAddresses({
       operation: 'ADD',
       customerId,
       address,
-    });
+    }) as GraphQLResponse<SavedAddress>;
     return response.data;
   },
 
   updateAddress: async (customerId: string, addressId: string, address: AddressInput): Promise<SavedAddress> => {
-    const response: any = await client.queries.manageSavedAddresses({
+    const response = await client.queries.manageSavedAddresses({
       operation: 'UPDATE',
       customerId,
       addressId,
       address,
-    });
+    }) as GraphQLResponse<SavedAddress>;
     return response.data;
   },
 
@@ -133,10 +135,10 @@ export const profileService = {
 
   // Payment Methods
   listPaymentMethods: async (customerId: string): Promise<SavedPaymentMethod[]> => {
-    const response: any = await client.queries.managePaymentMethods({
+    const response = await client.queries.managePaymentMethods({
       operation: 'LIST',
       customerId,
-    });
+    }) as GraphQLResponse<{ paymentMethods: SavedPaymentMethod[] }>;
     return response.data.paymentMethods || [];
   },
 
@@ -158,18 +160,18 @@ export const profileService = {
 
   // Loyalty Points
   getPointsBalance: async (customerId: string): Promise<{ balance: number; dollarValue: string }> => {
-    const response: any = await client.queries.manageLoyaltyPoints({
+    const response = await client.queries.manageLoyaltyPoints({
       operation: 'GET_BALANCE',
       customerId,
-    });
+    }) as GraphQLResponse<{ balance: number; dollarValue: string }>;
     return response.data;
   },
 
   getPointsHistory: async (customerId: string): Promise<LoyaltyTransaction[]> => {
-    const response: any = await client.queries.manageLoyaltyPoints({
+    const response = await client.queries.manageLoyaltyPoints({
       operation: 'GET_HISTORY',
       customerId,
-    });
+    }) as GraphQLResponse<{ transactions: LoyaltyTransaction[] }>;
     return response.data.transactions || [];
   },
 };

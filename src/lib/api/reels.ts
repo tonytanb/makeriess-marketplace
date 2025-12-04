@@ -6,7 +6,7 @@ const client = generateClient<Schema>();
 export interface Story {
   id: string;
   vendorId: string;
-  vendor?: any;
+  vendor?: { id: string; name: string; logo?: string; [key: string]: unknown };
   platform: 'TIKTOK' | 'INSTAGRAM' | 'MAKERIES_OFFICIAL';
   externalPostId?: string;
   externalUrl?: string;
