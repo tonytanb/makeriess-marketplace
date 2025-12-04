@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Product Discovery', () => {
-  test('should search for products', async ({ page }) => {
+  test('should search for products', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Find search input
@@ -22,7 +22,7 @@ test.describe('Product Discovery', () => {
     expect(url).toContain('search');
   });
 
-  test('should filter by category', async ({ page }) => {
+  test('should filter by category', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Click on a category
@@ -45,7 +45,7 @@ test.describe('Product Discovery', () => {
     }
   });
 
-  test('should view product details', async ({ page }) => {
+  test('should view product details', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Wait for products to load
@@ -68,7 +68,7 @@ test.describe('Product Discovery', () => {
     }
   });
 
-  test('should add product to favorites', async ({ page }) => {
+  test('should add product to favorites', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Wait for products to load
@@ -87,7 +87,7 @@ test.describe('Product Discovery', () => {
     }
   });
 
-  test('should sort products', async ({ page }) => {
+  test('should sort products', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Find sort dropdown

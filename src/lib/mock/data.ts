@@ -3,7 +3,18 @@
  * This provides realistic sample data to test the application without a backend
  */
 
-export const mockVendors = [
+import type {
+  MockVendor,
+  MockProduct,
+  MockOrder,
+  MockUser,
+  MockReview,
+  MockPromotion,
+  MockSyncLog,
+  MockVendorAnalytics,
+} from './types';
+
+export const mockVendors: MockVendor[] = [
   {
     id: 'vendor-1',
     name: 'Sweet Treats Bakery',

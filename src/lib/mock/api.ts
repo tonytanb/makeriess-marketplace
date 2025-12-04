@@ -13,6 +13,14 @@ import {
   mockSyncLogs,
   mockVendorAnalytics,
 } from './data';
+import {
+  mockProductToReal,
+  mockVendorToReal,
+  mockProductsToReal,
+  mockVendorsToReal,
+  type RealProduct,
+  type RealVendor
+} from './converters';
 
 // Simulate network delay
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -57,38 +65,42 @@ export const mockAPI = {
       results = results.slice(0, params.limit);
     }
     
-    return { products: results, total: results.length };
+    // Convert mock products to real products
+    const convertedProducts = mockProductsToReal(results);
+    return { products: convertedProducts, total: convertedProducts.length };
   },
 
   async getProduct(id: string) {
     await delay();
     const product = mockProducts.find(p => p.id === id);
     if (!product) throw new Error('Product not found');
-    return product;
+    return mockProductToReal(product);
   },
 
   async getTrendingProducts(limit: number = 6) {
     await delay();
-    return mockProducts.filter(p => p.trending).slice(0, limit);
+    const trending = mockProducts.filter(p => p.trending).slice(0, limit);
+    return mockProductsToReal(trending);
   },
 
   // Vendors
   async getNearbyVendors(params: { latitude: number; longitude: number; radiusMiles: number }) {
     await delay();
     // In a real app, this would calculate distance
-    return mockVendors;
+    return mockVendorsToReal(mockVendors);
   },
 
   async getVendor(id: string) {
     await delay();
     const vendor = mockVendors.find(v => v.id === id);
     if (!vendor) throw new Error('Vendor not found');
-    return vendor;
+    return mockVendorToReal(vendor);
   },
 
   async getVendorProducts(vendorId: string) {
     await delay();
-    return mockProducts.filter(p => p.vendorId === vendorId);
+    const products = mockProducts.filter(p => p.vendorId === vendorId);
+    return mockProductsToReal(products);
   },
 
   // Orders

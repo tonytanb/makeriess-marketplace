@@ -53,6 +53,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.0.3",
+    "@playwright/test": "^1.57.0",
     "@size-limit/file": "^11.2.0",
     "@size-limit/webpack": "^11.2.0",
     "@types/mapbox-gl": "^3.4.1",

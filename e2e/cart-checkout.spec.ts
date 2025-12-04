@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Cart and Checkout', () => {
-  test('should add product to cart', async ({ page }) => {
+  test('should add product to cart', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Wait for products to load
@@ -29,7 +29,7 @@ test.describe('Cart and Checkout', () => {
     }
   });
 
-  test('should open cart drawer', async ({ page }) => {
+  test('should open cart drawer', async ({ page }: { page: Page }) => {
     await page.goto('/');
     
     // Find cart button
@@ -51,7 +51,7 @@ test.describe('Cart and Checkout', () => {
     }
   });
 
-  test('should update cart item quantity', async ({ page }) => {
+  test('should update cart item quantity', async ({ page }: { page: Page }) => {
     await page.goto('/cart');
     
     // Wait for cart to load
@@ -73,7 +73,7 @@ test.describe('Cart and Checkout', () => {
     }
   });
 
-  test('should remove item from cart', async ({ page }) => {
+  test('should remove item from cart', async ({ page }: { page: Page }) => {
     await page.goto('/cart');
     
     // Wait for cart to load
@@ -92,7 +92,7 @@ test.describe('Cart and Checkout', () => {
     }
   });
 
-  test('should proceed to checkout', async ({ page }) => {
+  test('should proceed to checkout', async ({ page }: { page: Page }) => {
     await page.goto('/cart');
     
     // Wait for cart to load
@@ -114,7 +114,7 @@ test.describe('Cart and Checkout', () => {
     }
   });
 
-  test('should display vendor minimum warnings', async ({ page }) => {
+  test('should display vendor minimum warnings', async ({ page }: { page: Page }) => {
     await page.goto('/cart');
     
     // Wait for cart to load
