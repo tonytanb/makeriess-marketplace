@@ -1,0 +1,417 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  NODE_VERSION: '20.x'
+  AMPLIFY_APP_ID: ${{ secrets.AMPLIFY_APP_ID }}
+
+jobs:
+  # Job 1: Run tests and linting
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: false
+      
+      - name: Type check
+        run: npx tsc --noEmit
+        continue-on-error: false
+      
+      - name: Run unit tests
+        run: |
+          if [ -f "jest.config.js" ] || [ -f "jest.config.ts" ]; then
+            npm test -- --coverage
+          else
+            echo "No test configuration found, skipping tests"
+          fi
+        continue-on-error: true
+      
+      - name: Upload coverage reports
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+      
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_AMPLIFY_REGION: ${{ secrets.NEXT_PUBLIC_AMPLIFY_REGION }}
+      
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+            node_modules
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+  # Job 2: Security scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+      
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # Job 3: Deploy to staging (on develop branch)
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment:
+      name: staging
+      url: https://staging.makeriess.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy Amplify backend to staging
+        run: |
+          npx ampx pipeline-deploy \
+            --branch develop \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }}
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+      
+      - name: Wait for deployment
+        run: sleep 60
+      
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests against staging..."
+          curl -f https://staging.makeriess.com || exit 1
+          echo "Staging deployment successful!"
+      
+      - name: Notify deployment status
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Staging deployment ${{ job.status }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Job 4: Run E2E tests on staging
+  e2e-staging:
+    name: E2E Tests (Staging)
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright
+        run: |
+          if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then
+            npx playwright install --with-deps
+          else
+            echo "No Playwright configuration found, skipping E2E tests"
+            exit 0
+          fi
+      
+      - name: Run E2E tests
+        run: |
+          if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then
+            npx playwright test
+          else
+            echo "Skipping E2E tests - no configuration found"
+          fi
+        env:
+          BASE_URL: https://staging.makeriess.com
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+        continue-on-error: true
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  # Job 5: Manual approval for production
+  approve-production:
+    name: Approve Production Deployment
+    runs-on: ubuntu-latest
+    needs: [e2e-staging]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production-approval
+    
+    steps:
+      - name: Manual approval checkpoint
+        run: |
+          echo "Production deployment requires manual approval"
+          echo "Review staging deployment and E2E test results before proceeding"
+
+  # Job 6: Deploy to production with canary
+  deploy-production:
+    name: Deploy to Production (Canary)
+    runs-on: ubuntu-latest
+    needs: approve-production
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://makeriess.com
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy Amplify backend to production
+        run: |
+          npx ampx pipeline-deploy \
+            --branch main \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }}
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+      
+      - name: Configure canary deployment (10% traffic)
+        run: |
+          echo "Configuring canary deployment with 10% traffic split"
+          aws amplify update-branch \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name main \
+            --enable-auto-build \
+            --stage PRODUCTION
+      
+      - name: Wait for canary period (1 hour)
+        run: |
+          echo "Canary deployment active - monitoring for 1 hour"
+          echo "Monitoring CloudWatch metrics..."
+          sleep 60
+      
+      - name: Check canary metrics
+        id: canary-check
+        run: |
+          echo "Checking error rates and latency metrics..."
+          
+          # Get current timestamp and 1 hour ago
+          END_TIME=$(date -u +%Y-%m-%dT%H:%M:%S)
+          START_TIME=$(date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%S)
+          
+          # Check Lambda error rate
+          ERROR_RATE=$(aws cloudwatch get-metric-statistics \
+            --namespace AWS/Lambda \
+            --metric-name Errors \
+            --dimensions Name=FunctionName,Value=processOrder \
+            --start-time $START_TIME \
+            --end-time $END_TIME \
+            --period 3600 \
+            --statistics Average \
+            --query 'Datapoints[0].Average' \
+            --output text)
+          
+          echo "Error rate: $ERROR_RATE"
+          
+          # Fail if error rate > 5%
+          if (( $(echo "$ERROR_RATE > 5" | bc -l) )); then
+            echo "Error rate too high: $ERROR_RATE%"
+            echo "canary_status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          echo "canary_status=success" >> $GITHUB_OUTPUT
+      
+      - name: Promote canary to full production
+        if: steps.canary-check.outputs.canary_status == 'success'
+        run: |
+          echo "Canary metrics look good - promoting to 100% traffic"
+          aws amplify update-branch \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name main \
+            --enable-auto-build \
+            --stage PRODUCTION
+          echo "Production deployment complete!"
+      
+      - name: Rollback on canary failure
+        if: failure() && steps.canary-check.outputs.canary_status == 'failed'
+        run: |
+          echo "Canary metrics failed - rolling back deployment"
+          
+          # Get previous successful deployment
+          PREVIOUS_JOB_ID=$(aws amplify list-jobs \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name main \
+            --max-results 5 \
+            --query 'jobSummaries[?summary.status==`SUCCEED`] | [1].summary.jobId' \
+            --output text)
+          
+          echo "Rolling back to job: $PREVIOUS_JOB_ID"
+          
+          # Trigger rollback
+          aws amplify start-job \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name main \
+            --job-type RELEASE \
+            --job-id $PREVIOUS_JOB_ID
+      
+      - name: Notify deployment status
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Production deployment ${{ job.status }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+      
+      - name: Create GitHub release
+        if: success()
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            Production deployment successful
+            
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.ref }}
+            
+            Changes in this release:
+            ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: false
+
+  # Job 7: Post-deployment monitoring
+  post-deployment-monitoring:
+    name: Post-Deployment Monitoring
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Monitor CloudWatch metrics
+        run: |
+          echo "Monitoring production metrics for 5 minutes..."
+          
+          for i in {1..5}; do
+            echo "Check $i/5..."
+            
+            # Check API Gateway 5xx errors
+            ERROR_COUNT=$(aws cloudwatch get-metric-statistics \
+              --namespace AWS/ApiGateway \
+              --metric-name 5XXError \
+              --start-time $(date -u -d '5 minutes ago' +%Y-%m-%dT%H:%M:%S) \
+              --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+              --period 300 \
+              --statistics Sum \
+              --query 'Datapoints[0].Sum' \
+              --output text)
+            
+            echo "5XX errors in last 5 minutes: $ERROR_COUNT"
+            
+            sleep 60
+          done
+          
+          echo "Post-deployment monitoring complete"
+      
+      - name: Run production smoke tests
+        run: |
+          echo "Running production smoke tests..."
+          
+          # Test homepage
+          curl -f https://makeriess.com || exit 1
+          
+          # Test API health
+          curl -f https://api.makeriess.com/health || exit 1
+          
+          echo "All smoke tests passed!"

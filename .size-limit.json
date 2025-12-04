@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Initial JS Bundle",
+    "path": ".next/static/chunks/*.js",
+    "limit": "200 KB",
+    "webpack": false
+  },
+  {
+    "name": "Initial CSS",
+    "path": ".next/static/css/*.css",
+    "limit": "50 KB",
+    "webpack": false
+  },
+  {
+    "name": "Total Initial Load",
+    "path": [
+      ".next/static/chunks/*.js",
+      ".next/static/css/*.css"
+    ],
+    "limit": "250 KB",
+    "webpack": false
+  }
+]

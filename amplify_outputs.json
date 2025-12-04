@@ -1,0 +1,35 @@
+{
+  "version": "1",
+  "auth": {
+    "user_pool_id": "PLACEHOLDER",
+    "aws_region": "us-east-1",
+    "user_pool_client_id": "PLACEHOLDER",
+    "identity_pool_id": "PLACEHOLDER",
+    "mfa_methods": [],
+    "standard_required_attributes": ["email"],
+    "username_attributes": ["email"],
+    "user_verification_types": ["email"],
+    "mfa_configuration": "OPTIONAL",
+    "password_policy": {
+      "min_length": 8,
+      "require_lowercase": true,
+      "require_uppercase": true,
+      "require_numbers": true,
+      "require_symbols": false
+    },
+    "oauth": {
+      "identity_providers": ["GOOGLE", "SignInWithApple"],
+      "domain": "PLACEHOLDER.auth.us-east-1.amazoncognito.com",
+      "scopes": ["email", "openid", "profile"],
+      "redirect_sign_in_uri": ["http://localhost:3000/auth/callback"],
+      "redirect_sign_out_uri": ["http://localhost:3000"],
+      "response_type": "code"
+    }
+  },
+  "data": {
+    "url": "PLACEHOLDER",
+    "aws_region": "us-east-1",
+    "default_authorization_type": "AMAZON_COGNITO_USER_POOLS",
+    "authorization_types": ["AWS_IAM"]
+  }
+}
