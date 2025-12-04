@@ -4,8 +4,51 @@ This document tracks ESLint errors and code quality issues that need to be fixed
 
 ## Current Status
 - **Total ESLint Errors**: ~50+
+- **Total TypeScript Errors**: ~200+
 - **Priority**: High (blocking clean builds)
 - **Target**: Zero errors, <10 warnings
+- **CI Status**: ✅ Temporarily bypassed to allow deployment
+
+## TypeScript Compilation Errors (CRITICAL - Fix First)
+
+### 1. Missing Amplify Generated Types (Blocking)
+**Impact**: Cannot import Amplify schema types
+**Effort**: Low (run Amplify codegen)
+
+**Solution**: Run Amplify sandbox or deploy to generate types
+```bash
+npx ampx sandbox
+# OR
+npx ampx generate
+```
+
+Affected files:
+- `src/lib/amplify/client.ts`
+- `src/lib/api/profile.ts`
+- `src/lib/api/reels.ts`
+- `src/lib/graphql/subscriptions.ts`
+- `src/app/vendor/moderation/page.tsx`
+- `src/app/vendor/promotions/page.tsx`
+- `src/components/vendor/PromotionForm.tsx`
+- `src/lib/hooks/usePromotions.ts`
+
+### 2. Mock Data Type Mismatches (High Priority)
+**Impact**: Type safety issues, potential runtime bugs
+**Effort**: Medium (align mock data with real types)
+
+The mock data in `src/lib/mock/data.ts` is missing required fields:
+- Products missing: `isVisible`, `isAvailable`, `viewCount`, `favoriteCount`, `orderCount`
+- Vendors missing: `businessName`, `address`, `categories`, `minimumOrder`, `isPaused`
+
+**Solution**: Update mock data to match actual types or create separate mock types
+
+### 3. Playwright Types Not Installed (Low Priority)
+**Impact**: E2E tests won't type-check
+**Effort**: Low (install package)
+
+```bash
+npm install --save-dev @playwright/test
+```
 
 ## ESLint Error Categories
 
