@@ -34,7 +34,7 @@ yarn-error.log*
 next-env.d.ts
 
 # amplify
-amplify/
-.amplify/
+/amplify/
+/.amplify/
 amplifyconfiguration.json
 amplifyconfiguration.dart

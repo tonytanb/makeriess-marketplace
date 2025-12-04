@@ -172,12 +172,15 @@ export function trackShareEvent(
 ): void {
   // This would integrate with your analytics service
   // For now, we'll just log it
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', 'share', {
-      content_type: type,
-      content_id: id,
-      method: method,
-    });
+  if (typeof window !== 'undefined' && 'gtag' in window) {
+    const gtag = (window as { gtag?: (...args: unknown[]) => void }).gtag;
+    if (gtag) {
+      gtag('event', 'share', {
+        content_type: type,
+        content_id: id,
+        method: method,
+      });
+    }
   }
   
   console.log('Share event:', { type, id, method });

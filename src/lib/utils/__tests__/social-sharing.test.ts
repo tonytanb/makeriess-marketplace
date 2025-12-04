@@ -113,9 +113,9 @@ describe('Social Sharing Utils', () => {
 });
 
 // Simple test runner for demonstration
-function expect(value: any) {
+function expect(value: unknown) {
   return {
-    toBe: (expected: any) => {
+    toBe: (expected: unknown) => {
       if (value !== expected) {
         throw new Error(`Expected ${value} to be ${expected}`);
       }

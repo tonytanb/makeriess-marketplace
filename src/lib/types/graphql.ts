@@ -52,7 +52,7 @@ export interface SearchProductsInput {
 }
 
 export interface SearchProductsResult {
-  items: any[];
+  items: Record<string, unknown>[];
   total: number;
   nextToken?: string | null;
 }
@@ -81,7 +81,7 @@ export interface ConnectPOSInput {
 export interface ConnectPOSResult {
   success: boolean;
   message: string;
-  vendor: any | null;
+  vendor: Record<string, unknown> | null;
 }
 
 export interface SyncPOSProductsInput {
@@ -114,7 +114,7 @@ export interface CreateCheckoutSessionInput {
 export interface CreateCheckoutSessionResult {
   sessionId: string | null;
   clientSecret: string | null;
-  orders: any[];
+  orders: Record<string, unknown>[];
   total: number | null;
 }
 

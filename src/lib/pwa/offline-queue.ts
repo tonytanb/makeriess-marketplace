@@ -4,7 +4,7 @@ interface PendingAction {
   id?: number;
   type: 'cart' | 'favorite';
   action: 'add' | 'remove' | 'update';
-  data: any;
+  data: Record<string, unknown>;
   timestamp: number;
 }
 
