@@ -5,13 +5,12 @@
  * Allows users to sign in with email/password or social providers
  */
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signInUser } from '@/lib/auth/auth-service';
 import { AuthInput } from '@/components/auth/AuthInput';
 import { AuthButton } from '@/components/auth/AuthButton';
-import { isDemoMode } from '@/lib/mock/api';
 
 export default function LoginPage() {
   const router = useRouter();
