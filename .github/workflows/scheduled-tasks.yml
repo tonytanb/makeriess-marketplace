@@ -35,30 +35,35 @@ jobs:
         with:
           script: |
             const { execSync } = require('child_process');
-            const outdated = execSync('npm outdated --json || true').toString();
+            const outdated = execSync('npm outdated --json || echo "{}"').toString().trim();
             
-            if (outdated) {
-              const packages = JSON.parse(outdated);
-              const majorUpdates = Object.entries(packages)
-                .filter(([_, info]) => {
-                  const current = info.current.split('.')[0];
-                  const latest = info.latest.split('.')[0];
-                  return current !== latest;
-                });
-              
-              if (majorUpdates.length > 0) {
-                const body = `## Major Dependency Updates Available\n\n` +
-                  majorUpdates.map(([name, info]) => 
-                    `- **${name}**: ${info.current} → ${info.latest}`
-                  ).join('\n');
+            if (outdated && outdated !== '{}') {
+              try {
+                const packages = JSON.parse(outdated);
+                const majorUpdates = Object.entries(packages)
+                  .filter(([_, info]) => {
+                    if (!info.current || !info.latest) return false;
+                    const current = info.current.split('.')[0];
+                    const latest = info.latest.split('.')[0];
+                    return current !== latest;
+                  });
                 
-                github.rest.issues.create({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  title: 'Major dependency updates available',
-                  body: body,
-                  labels: ['dependencies', 'maintenance']
-                });
+                if (majorUpdates.length > 0) {
+                  const body = `## Major Dependency Updates Available\n\n` +
+                    majorUpdates.map(([name, info]) => 
+                      `- **${name}**: ${info.current} → ${info.latest}`
+                    ).join('\n');
+                  
+                  github.rest.issues.create({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    title: 'Major dependency updates available',
+                    body: body,
+                    labels: ['dependencies', 'maintenance']
+                  });
+                }
+              } catch (error) {
+                console.log('No outdated packages or error parsing output');
               }
             }
 
@@ -98,6 +103,7 @@ jobs:
   cost-monitoring:
     name: AWS Cost Monitoring
     runs-on: ubuntu-latest
+    if: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' }}
     
     steps:
       - name: Configure AWS credentials
@@ -105,7 +111,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
       
       - name: Check AWS costs
         run: |
@@ -163,6 +169,7 @@ jobs:
   backup-verification:
     name: Verify Database Backups
     runs-on: ubuntu-latest
+    if: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' }}
     
     steps:
       - name: Configure AWS credentials
@@ -170,7 +177,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
       
       - name: Check DynamoDB backups
         run: |
