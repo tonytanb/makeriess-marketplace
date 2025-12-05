@@ -50,37 +50,34 @@ export {
 } from './types';
 
 // Utility functions for common operations
+import { mockProducts as _mockProducts, mockVendors as _mockVendors, mockPromotions as _mockPromotions } from './data';
+
 export const mockUtils = {
   // Get random products
   getRandomProducts: (count: number = 5) => {
-    const { mockProducts } = require('./data');
-    const shuffled = [...mockProducts].sort(() => 0.5 - Math.random());
+    const shuffled = [..._mockProducts].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   },
 
   // Get products by category
   getProductsByCategory: (category: string) => {
-    const { mockProducts } = require('./data');
-    return mockProducts.filter((p: any) => p.category === category);
+    return _mockProducts.filter(p => p.category === category);
   },
 
   // Get trending products
   getTrendingProducts: () => {
-    const { mockProducts } = require('./data');
-    return mockProducts.filter((p: any) => p.trending);
+    return _mockProducts.filter(p => p.trending);
   },
 
   // Get vendors by category
   getVendorsByCategory: (category: string) => {
-    const { mockVendors } = require('./data');
-    return mockVendors.filter((v: any) => v.category === category);
+    return _mockVendors.filter(v => v.category === category);
   },
 
   // Get active promotions
   getActivePromotions: () => {
-    const { mockPromotions } = require('./data');
     const now = new Date();
-    return mockPromotions.filter((p: any) => 
+    return _mockPromotions.filter(p => 
       p.isActive && 
       new Date(p.startDate) <= now && 
       new Date(p.endDate) >= now
@@ -89,9 +86,8 @@ export const mockUtils = {
 
   // Search products
   searchProducts: (query: string) => {
-    const { mockProducts } = require('./data');
     const lowerQuery = query.toLowerCase();
-    return mockProducts.filter((p: any) => 
+    return _mockProducts.filter(p => 
       p.name.toLowerCase().includes(lowerQuery) ||
       p.description.toLowerCase().includes(lowerQuery) ||
       p.tags.some((tag: string) => tag.toLowerCase().includes(lowerQuery))
@@ -111,15 +107,25 @@ export const isDemoMode = () => {
 };
 
 // Default export for convenience
+import { mockAPI as _mockAPI } from './api';
+import { 
+  mockProducts as _products, 
+  mockVendors as _vendors, 
+  mockOrders as _orders,
+  mockReviews as _reviews,
+  mockStories as _stories,
+  mockPromotions as _promotions
+} from './data';
+
 export default {
-  api: require('./api').mockAPI,
+  api: _mockAPI,
   data: {
-    products: require('./data').mockProducts,
-    vendors: require('./data').mockVendors,
-    orders: require('./data').mockOrders,
-    reviews: require('./data').mockReviews,
-    stories: require('./data').mockStories,
-    promotions: require('./data').mockPromotions
+    products: _products,
+    vendors: _vendors,
+    orders: _orders,
+    reviews: _reviews,
+    stories: _stories,
+    promotions: _promotions
   },
   utils: mockUtils,
   isDemoMode
