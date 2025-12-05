@@ -84,16 +84,16 @@ export default function ShopifySetupPage() {
               <span className="text-gray-600">.myshopify.com</span>
             </div>
             <p className="mt-2 text-sm text-gray-500">
-              Enter your Shopify store name (e.g., "your-store" for your-store.myshopify.com)
+              Enter your Shopify store name (e.g., &quot;your-store&quot; for your-store.myshopify.com)
             </p>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h3 className="text-sm font-semibold text-blue-900 mb-2">What happens next:</h3>
             <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-              <li>You'll be redirected to Shopify to authorize Makeriess</li>
+              <li>You&apos;ll be redirected to Shopify to authorize Makeriess</li>
               <li>Grant permission to read your products and inventory</li>
-              <li>You'll be redirected back to complete the connection</li>
+              <li>You&apos;ll be redirected back to complete the connection</li>
               <li>Your products will automatically sync</li>
             </ol>
           </div>

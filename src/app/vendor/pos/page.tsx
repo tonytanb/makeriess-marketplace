@@ -264,7 +264,7 @@ export default function POSConnectionPage() {
         <ul className="space-y-2 text-sm text-blue-800">
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">1.</span>
-            <span>Click "Connect" on your POS provider to authorize Makeriess</span>
+            <span>Click &quot;Connect&quot; on your POS provider to authorize Makeriess</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">2.</span>
@@ -272,7 +272,7 @@ export default function POSConnectionPage() {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">3.</span>
-            <span>Use "Sync Now" to manually trigger a sync at any time</span>
+            <span>Use &quot;Sync Now&quot; to manually trigger a sync at any time</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">4.</span>
