@@ -5,11 +5,7 @@
 
 import type {
   MockProduct,
-  MockVendor,
-  MockOrder,
-  MockReview,
-  MockStory,
-  MockPromotion
+  MockVendor
 } from './types';
 
 // These would be your real types from Amplify/GraphQL
