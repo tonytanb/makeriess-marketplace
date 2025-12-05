@@ -43,7 +43,7 @@ export function SalesTrendChart({ data, period }: SalesTrendChartProps) {
       <h3 className="text-lg font-semibold text-gray-900 mb-6">Sales Trend</h3>
       
       <div className="space-y-2">
-        {data.map((metric, index) => (
+        {data.map((metric) => (
           <div key={metric.date} className="flex items-center gap-3">
             <div className="w-24 text-sm text-gray-600 flex-shrink-0">
               {formatDate(metric.date)}

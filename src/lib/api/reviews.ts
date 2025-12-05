@@ -42,7 +42,7 @@ export const reviewService = {
       if (input.images && input.images.length > 0) {
         for (const image of input.images.slice(0, 3)) {
           const key = `reviews/${input.customerId}/${Date.now()}-${image.name}`;
-          const result = await uploadData({
+          await uploadData({
             key,
             data: image,
             options: {

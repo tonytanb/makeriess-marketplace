@@ -247,7 +247,7 @@ export const vendorService = {
     }
   },
 
-  getSyncLogs: async (vendorId: string, limit: number = 10): Promise<SyncLog[]> => {
+  getSyncLogs: async (vendorId: string, _limit: number = 10): Promise<SyncLog[]> => {
     try {
       // Query DynamoDB for sync logs
       // This would need a custom query implementation
