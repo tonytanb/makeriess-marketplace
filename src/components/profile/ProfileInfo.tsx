@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useUpdateProfile } from '@/lib/hooks/useProfile';
-import type { CustomerProfile, ProfileUpdateInput } from '@/lib/api/profile';
+import type { CustomerProfile } from '@/lib/api/profile';
 
 interface ProfileInfoProps {
   profile: CustomerProfile | undefined;

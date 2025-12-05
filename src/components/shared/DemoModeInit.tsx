@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { enableDemoMode, isDemoMode } from '@/lib/mock/api';
+import { enableDemoMode } from '@/lib/mock/api';
 
 /**
  * Automatically enables demo mode if not explicitly disabled

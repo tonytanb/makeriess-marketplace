@@ -2,7 +2,7 @@
 
 import Image, { ImageProps } from 'next/image';
 import { useState } from 'react';
-import { getOptimizedImageProps, generateBlurDataURL } from '@/lib/utils/image-optimization';
+import { generateBlurDataURL } from '@/lib/utils/image-optimization';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'src' | 'alt'> {
   src: string;

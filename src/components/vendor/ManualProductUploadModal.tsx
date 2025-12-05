@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Upload, Plus } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 
 interface ManualProductUploadModalProps {
   isOpen: boolean;
