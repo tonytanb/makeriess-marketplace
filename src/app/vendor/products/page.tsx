@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Package,
   Plus,
@@ -9,7 +8,6 @@ import {
   Eye,
   EyeOff,
   Search,
-  Filter,
   RefreshCw,
   AlertCircle,
 } from 'lucide-react';
@@ -22,7 +20,6 @@ import { client } from '@/lib/amplify/client';
 import { getCurrentUser } from 'aws-amplify/auth';
 
 export default function VendorProductsPage() {
-  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
