@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ChevronLeft,
-  Package,
   Loader2,
   MapPin,
   Clock,

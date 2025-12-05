@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { generateClient } from 'aws-amplify/data';
-import type { Schema } from '../../../../amplify/data/resource';
 import { imageSizes, generateBlurDataURL } from '@/lib/utils/image-optimization';
 
-const client = generateClient<Schema>();
+// Note: Amplify client will be used when backend is deployed
+// const client = generateClient<Schema>();
 
 interface Story {
   id: string;

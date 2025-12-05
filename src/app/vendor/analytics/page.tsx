@@ -31,7 +31,7 @@ export default function VendorAnalyticsPage() {
   // Calculate date range
   const { startDate, endDate } = useMemo(() => {
     const end = new Date();
-    let start = new Date();
+    const start = new Date();
 
     if (dateRange === 'custom' && customStartDate && customEndDate) {
       return {

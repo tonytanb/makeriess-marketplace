@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getAuthenticatedUser } from '@/lib/auth/auth-service';
 import { useStore } from '@/lib/store/useStore';
 import { useProductSearch } from '@/lib/hooks/useProducts';
 import { Header } from '@/components/customer/Header';
@@ -19,7 +17,6 @@ import { BottomNav } from '@/components/customer/BottomNav';
 import type { ProductSortOption } from '@/lib/types/customer';
 
 export default function DiscoverPage() {
-  const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   

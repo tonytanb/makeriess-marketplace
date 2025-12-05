@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { TestTube2, ShoppingBag, Store, MapPin, Heart, Package } from 'lucide-react';
 import { enableDemoMode } from '@/lib/mock/api';
@@ -98,7 +97,7 @@ export default function DemoPage() {
         {/* Demo Data Info */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
           <h3 className="text-lg font-semibold text-blue-900 mb-3">
-            What's Included in Demo Mode:
+            What&apos;s Included in Demo Mode:
           </h3>
           <ul className="space-y-2 text-blue-800">
             <li className="flex items-start gap-2">
