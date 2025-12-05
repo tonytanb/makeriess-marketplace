@@ -17,9 +17,7 @@ import {
   mockProductToReal,
   mockVendorToReal,
   mockProductsToReal,
-  mockVendorsToReal,
-  type RealProduct,
-  type RealVendor
+  mockVendorsToReal
 } from './converters';
 
 // Simulate network delay
@@ -254,12 +252,12 @@ export const mockAPI = {
     };
   },
 
-  async disconnectPOS(vendorId: string) {
+  async disconnectPOS(_vendorId: string) {
     await delay(800);
     return { success: true };
   },
 
-  async syncPOSProducts(vendorId: string) {
+  async syncPOSProducts(_vendorId: string) {
     await delay(2000);
     // Simulate sync results
     const productsAdded = Math.floor(Math.random() * 5);
@@ -281,7 +279,7 @@ export const mockAPI = {
   },
 
   // Vendor Analytics
-  async getVendorAnalytics(vendorId: string, params?: { startDate?: string; endDate?: string }) {
+  async getVendorAnalytics(vendorId: string, _params?: { startDate?: string; endDate?: string }) {
     await delay();
     const analytics = mockVendorAnalytics[vendorId as keyof typeof mockVendorAnalytics];
     if (!analytics) {
@@ -370,18 +368,18 @@ export const mockAPI = {
     return filtered;
   },
 
-  async trackStoryView(storyId: string) {
+  async trackStoryView(_storyId: string) {
     await delay(200);
     return { success: true };
   },
 
-  async interactWithStory(storyId: string, action: 'like' | 'share') {
+  async interactWithStory(_storyId: string, _action: 'like' | 'share') {
     await delay(300);
     return { success: true };
   },
 
   // Notifications
-  async getNotifications(userId: string) {
+  async getNotifications(_userId: string) {
     await delay();
     return [
       {
@@ -403,7 +401,7 @@ export const mockAPI = {
     ];
   },
 
-  async markNotificationRead(notificationId: string) {
+  async markNotificationRead(_notificationId: string) {
     await delay(200);
     return { success: true };
   },

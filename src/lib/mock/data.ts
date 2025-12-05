@@ -3,15 +3,15 @@
  * This provides realistic sample data to test the application without a backend
  */
 
-import type {
-  MockVendor,
-  MockProduct,
-  MockOrder,
-  MockUser,
-  MockReview,
-  MockPromotion,
-  MockSyncLog,
-  MockVendorAnalytics,
+import {
+  type MockVendor,
+  type MockProduct,
+  type MockOrder,
+  type MockUser,
+  type MockReview,
+  type MockPromotion,
+  type MockSyncLog,
+  type MockVendorAnalytics,
 } from './types';
 
 export const mockVendors: MockVendor[] = [
